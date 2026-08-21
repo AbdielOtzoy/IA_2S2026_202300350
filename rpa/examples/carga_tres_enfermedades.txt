@@ -1,0 +1,44 @@
+{
+  "sintomas": [
+    {
+      "id": "dolor_pecho",
+      "name": "Dolor de pecho",
+      "description": "Molestia torácica usada como dato de alarma en el ejemplo RPA.",
+      "alarm": true
+    }
+  ],
+  "medicamentos": [],
+  "enfermedades": [
+    {
+      "id": "bronquitis_aguda",
+      "name": "Bronquitis aguda",
+      "description": "Ejemplo cargado por el robot para demostrar clasificación respiratoria.",
+      "system": "respiratorio",
+      "type": "viral",
+      "is_background": false,
+      "symptoms": ["tos", "fiebre", "dolor_pecho"],
+      "medications": ["paracetamol"]
+    },
+    {
+      "id": "migrena",
+      "name": "Migraña",
+      "description": "Ejemplo cargado por el robot para demostrar clasificación neurológica.",
+      "system": "neurologico",
+      "type": "cronico",
+      "is_background": false,
+      "symptoms": ["dolor_cabeza", "mareo"],
+      "medications": ["paracetamol"]
+    },
+    {
+      "id": "alergia_estacional",
+      "name": "Alergia estacional",
+      "description": "Ejemplo cargado por el robot para demostrar clasificación inmunológica.",
+      "system": "respiratorio",
+      "type": "inmunologico",
+      "is_background": false,
+      "symptoms": ["estornudos", "congestion_nasal"],
+      "medications": ["loratadina"]
+    }
+  ]
+}
+
