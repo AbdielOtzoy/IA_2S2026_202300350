@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "symptoms": [
+    {
+      "id": "tos",
+      "name": "Tos",
+      "description": "Irritación o expulsión de aire de las vías respiratorias.",
+      "alarm": false
+    },
+    {
+      "id": "congestion_nasal",
+      "name": "Congestión nasal",
+      "description": "Obstrucción o sensación de nariz tapada.",
+      "alarm": false
+    },
+    {
+      "id": "dolor_garganta",
+      "name": "Dolor de garganta",
+      "description": "Molestia o dolor al tragar.",
+      "alarm": false
+    },
+    {
+      "id": "fiebre",
+      "name": "Fiebre",
+      "description": "Elevación de la temperatura corporal.",
+      "alarm": true
+    },
+    {
+      "id": "dificultad_respirar",
+      "name": "Dificultad para respirar",
+      "description": "Sensación de falta de aire o respiración trabajosa.",
+      "alarm": true
+    },
+    {
+      "id": "estornudos",
+      "name": "Estornudos",
+      "description": "Expulsión brusca de aire por nariz y boca.",
+      "alarm": false
+    },
+    {
+      "id": "dolor_cabeza",
+      "name": "Dolor de cabeza",
+      "description": "Dolor o presión en la cabeza.",
+      "alarm": false
+    },
+    {
+      "id": "presion_alta",
+      "name": "Presión arterial elevada",
+      "description": "Lectura elevada de presión arterial registrada previamente.",
+      "alarm": true
+    },
+    {
+      "id": "mareo",
+      "name": "Mareo",
+      "description": "Sensación de inestabilidad o aturdimiento.",
+      "alarm": false
+    },
+    {
+      "id": "dolor_muscular",
+      "name": "Dolor muscular",
+      "description": "Dolor generalizado en músculos.",
+      "alarm": false
+    }
+  ],
+  "diseases": [
+    {
+      "id": "resfriado_comun",
+      "name": "Resfriado común",
+      "description": "Infección respiratoria viral frecuente de evolución generalmente leve.",
+      "system": "respiratorio",
+      "type": "viral",
+      "is_background": false,
+      "symptoms": ["tos", "congestion_nasal", "dolor_garganta", "estornudos"],
+      "medications": ["paracetamol", "loratadina", "ibuprofeno"]
+    },
+    {
+      "id": "influenza",
+      "name": "Influenza",
+      "description": "Infección respiratoria viral que puede presentar fiebre y dolor muscular.",
+      "system": "respiratorio",
+      "type": "viral",
+      "is_background": false,
+      "symptoms": ["fiebre", "tos", "dolor_muscular", "dolor_garganta"],
+      "medications": ["paracetamol", "ibuprofeno"]
+    },
+    {
+      "id": "rinitis_alergica",
+      "name": "Rinitis alérgica",
+      "description": "Respuesta alérgica que afecta principalmente las vías respiratorias superiores.",
+      "system": "respiratorio",
+      "type": "inmunologico",
+      "is_background": false,
+      "symptoms": ["estornudos", "congestion_nasal", "tos"],
+      "medications": ["loratadina"]
+    },
+    {
+      "id": "hipertension",
+      "name": "Hipertensión arterial",
+      "description": "Antecedente de presión arterial elevada que requiere seguimiento profesional.",
+      "system": "cardiovascular",
+      "type": "cronico",
+      "is_background": true,
+      "symptoms": ["presion_alta", "dolor_cabeza", "mareo"],
+      "medications": ["losartan"]
+    }
+  ],
+  "medications": [
+    {
+      "id": "paracetamol",
+      "name": "Paracetamol",
+      "description": "Candidato sintético para aliviar fiebre y dolor; no es una prescripción médica."
+    },
+    {
+      "id": "ibuprofeno",
+      "name": "Ibuprofeno",
+      "description": "Candidato sintético antiinflamatorio; requiere revisión profesional de contraindicaciones."
+    },
+    {
+      "id": "loratadina",
+      "name": "Loratadina",
+      "description": "Candidato sintético antihistamínico para síntomas alérgicos."
+    },
+    {
+      "id": "losartan",
+      "name": "Losartán",
+      "description": "Candidato sintético asociado al antecedente de hipertensión en este prototipo."
+    },
+    {
+      "id": "warfarina",
+      "name": "Warfarina",
+      "description": "Tratamiento actual de ejemplo para probar incompatibilidades."
+    }
+  ],
+  "contraindications": [
+    {
+      "medication_id": "ibuprofeno",
+      "conflict_type": "chronic_condition",
+      "reference_id": "hipertension",
+      "reason": "Se excluye en este prototipo cuando existe hipertensión como antecedente."
+    },
+    {
+      "medication_id": "ibuprofeno",
+      "conflict_type": "treatment",
+      "reference_id": "warfarina",
+      "reason": "Se excluye en este prototipo por incompatibilidad con warfarina."
+    }
+  ]
+}
+
