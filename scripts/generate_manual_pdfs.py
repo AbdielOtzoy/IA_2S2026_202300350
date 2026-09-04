@@ -64,6 +64,51 @@ class ArchitectureDiagram(Flowable):
         canvas.drawCentredString(self.width * .5, self.height * .28, "JSON estructurado + regeneración y recarga bajo bloqueo")
 
 
+class PipelineDiagram(Flowable):
+    """Diagrama horizontal de un flujo: cajas conectadas con flechas y nota inferior."""
+
+    def __init__(self, boxes, note="", width=7.2 * inch, height=1.5 * inch):
+        super().__init__()
+        self.boxes = boxes
+        self.note = note
+        self.width = width
+        self.height = height
+
+    def draw(self):
+        canvas = self.canv
+        count = len(self.boxes)
+        box_width = self.width * 0.17
+        gap = (self.width - count * box_width) / (count + 1)
+        box_height = self.height * 0.42
+        y = self.height * 0.36
+        canvas.setFont("Helvetica-Bold", 7.5)
+        centers = []
+        for index, label in enumerate(self.boxes):
+            x = gap + index * (box_width + gap)
+            canvas.setFillColor(MINT)
+            canvas.setStrokeColor(TEAL)
+            canvas.roundRect(x, y, box_width, box_height, 6, fill=1, stroke=1)
+            canvas.setFillColor(NAVY)
+            lines = label.split("\n")
+            for line_index, line in enumerate(lines):
+                offset = (len(lines) - 1) * 4
+                canvas.drawCentredString(x + box_width / 2, y + box_height / 2 + offset - line_index * 8, line)
+            centers.append((x, x + box_width))
+        canvas.setStrokeColor(TEAL)
+        canvas.setLineWidth(1.2)
+        for index in range(count - 1):
+            start = centers[index][1]
+            end = centers[index + 1][0]
+            middle = y + box_height / 2
+            canvas.line(start + 2, middle, end - 2, middle)
+            canvas.line(end - 6, middle + 3, end - 2, middle)
+            canvas.line(end - 6, middle - 3, end - 2, middle)
+        if self.note:
+            canvas.setFillColor(MUTED)
+            canvas.setFont("Helvetica", 7.5)
+            canvas.drawCentredString(self.width / 2, self.height * 0.14, self.note)
+
+
 def styles():
     base = getSampleStyleSheet()
     return {
@@ -104,10 +149,10 @@ def cover(title, subtitle, style):
 def build_manual_tecnico():
     s = styles()
     story = cover("Manual técnico", "Arquitectura, reglas Prolog, seguridad, RPA y decisiones de implementación", s)
-    story += [p("1. Propósito y alcance", s["h1"]), p("MediLogic recibe síntomas sintéticos, severidades, alergias, antecedentes y tratamientos actuales. La API coordina un archivo JSON estructurado y una representación Prolog generada. El resultado conserva las coincidencias, los pesos, la urgencia, las reglas y los medicamentos descartados.", s["body"]), p("La herramienta es educativa. No debe usarse para diagnosticar, prescribir ni reemplazar atención profesional.", s["callout"]), p("2. Componentes", s["h1"]), p("React/Vite presenta el flujo de paciente y el panel administrativo. FastAPI valida el contrato HTTP y protege las rutas administrativas. KnowledgeRepository ejecuta transacciones de persistencia y PrologEngine consulta SWI-Prolog mediante pyswip. ReportLab crea informes PDF y rpa/importer.py procesa el TXT provisional.", s["body"]), p("3. Modelo de conocimiento", s["h1"]), rich("<b>Entidades:</b> síntomas (id, nombre, descripción, alarma), enfermedades (clasificación, antecedentes, síntomas y medicamentos), medicamentos y contraindicaciones. El JSON es la fuente CRUD; el archivo .pl se regenera completo para mantener una estructura controlada.", s["body"]), p("4. Fórmula de afinidad", s["h1"])]
+    story += [p("1. Propósito y alcance", s["h1"]), p("MediLogic recibe síntomas sintéticos, severidades, alergias, antecedentes y tratamientos actuales. La API coordina un archivo JSON estructurado y una representación Prolog generada. El resultado conserva las coincidencias, los pesos, la urgencia, las reglas y los medicamentos descartados.", s["body"]), p("La herramienta es educativa. No debe usarse para diagnosticar, prescribir ni reemplazar atención profesional.", s["callout"]), p("2. Componentes", s["h1"]), p("React/Vite presenta el flujo de paciente y el panel administrativo. FastAPI valida el contrato HTTP y protege las rutas administrativas. KnowledgeRepository ejecuta transacciones de persistencia y PrologEngine consulta SWI-Prolog mediante pyswip. ReportLab crea informes PDF y rpa/importer.py procesa los archivos de carga oficial e interno.", s["body"]), PipelineDiagram(["Paciente", "React/Vite", "FastAPI", "Prolog", "Informe"], "Flujo del paciente: catálogo dinámico, severidad, afinidad, urgencia, seguridad y trazabilidad"), Spacer(1, 10), p("3. Modelo de conocimiento", s["h1"]), rich("<b>Entidades:</b> síntomas (id, nombre, descripción, alarma), enfermedades (clasificación, antecedentes, síntomas y medicamentos), medicamentos y contraindicaciones. El JSON es la fuente CRUD; el archivo .pl se regenera completo para mantener una estructura controlada.", s["body"]), p("4. Fórmula de afinidad", s["h1"])]
     formula = Table([["Elemento", "Regla"], ["Peso", "leve=1 · moderado=2 · severo=3"], ["Máximo", "cantidad de síntomas de la enfermedad * 3"], ["Afinidad", "puntos_obtenidos / puntos_maximos * 100"]], colWidths=[1.35 * inch, 5.75 * inch])
     formula.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), NAVY), ("TEXTCOLOR", (0, 0), (-1, 0), colors.white), ("GRID", (0, 0), (-1, -1), .3, colors.HexColor("#CBD5E0")), ("BACKGROUND", (0, 1), (-1, -1), MINT), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("FONTNAME", (0, 1), (-1, -1), "Helvetica"), ("FONTSIZE", (0, 0), (-1, -1), 8.5), ("TOPPADDING", (0, 0), (-1, -1), 7), ("BOTTOMPADDING", (0, 0), (-1, -1), 7)]))
-    story += [formula, Spacer(1, 8), p("El cálculo vive en Prolog, se redondea a dos decimales y se limita a 100%. La aplicación no mezcla puntos con porcentajes.", s["body"]), p("5. Reglas de inferencia", s["h1"]), p("diagnosis_metrics/6 obtiene coincidencias y suma pesos. matched_symptom/5 conserva el detalle. urgency/4 prioriza síntomas severos y banderas de alarma; después evalúa síntomas moderados y finalmente un perfil compuesto solo por síntomas leves.", s["body"]), p("medication_evaluation/8 descarta en este orden: alergia directa, condición crónica, contraindicación con la enfermedad diagnosticada e incompatibilidad con un tratamiento actual. Si no queda un candidato, la respuesta conserva una advertencia y no inventa una opción.", s["body"]), PageBreak(), p("6. Actualización y rollback", s["h1"]), p("Una operación administrativa valida el modelo Pydantic y las referencias. Luego genera archivos temporales, compila el .pl con SWI-Prolog, reemplaza JSON y Prolog de forma atómica y ejecuta load_files/2 con recarga forzada bajo un RLock. Si la recarga falla, restaura los bytes anteriores y registra el error para evitar un estado parcial.", s["body"]), p("7. Autenticación", s["h1"]), p("El usuario y un hash PBKDF2 se leen desde variables de entorno. El login entrega un token temporal almacenado solo en memoria. Todas las rutas administrativas exigen Authorization: Bearer. CORS usa orígenes explícitos.", s["body"]), p("8. RPA", s["h1"]), p("La primera versión acepta un TXT UTF-8 con JSON. El adaptador valida extensión, tamaño, contenido, identificadores y relaciones. La carga de ejemplo agrega tres enfermedades, clasifica por sistema/tipo, regenera el conocimiento, recarga el motor y crea logs/rpa_*.txt. PyAutoGUI y TagUI quedan pendientes de confirmación docente.", s["body"]), p("9. Verificación", s["h1"]), rich('<b>Backend:</b> <font name="Courier">pytest</font><br/><b>Frontend:</b> <font name="Courier">cd frontend &amp;&amp; npm run build</font><br/><b>Prolog:</b> <font name="Courier">python -m scripts.generate_prolog</font>', s["body"]), p("10. Despliegue pendiente", s["h1"]), p("GitHub Pages no ejecuta FastAPI, SWI-Prolog ni pyswip. El repositorio mantiene la decisión local-first hasta confirmar con el docente si el frontend se publicará en Pages y el backend en otro entorno permitido.", s["callout"])]
+    story += [formula, Spacer(1, 8), p("El cálculo vive en Prolog, se redondea a dos decimales y se limita a 100%. La aplicación no mezcla puntos con porcentajes.", s["body"]), p("5. Reglas de inferencia", s["h1"]), p("diagnosis_metrics/6 obtiene coincidencias y suma pesos. matched_symptom/5 conserva el detalle. urgency/4 prioriza síntomas severos y banderas de alarma; después evalúa síntomas moderados y finalmente un perfil compuesto solo por síntomas leves.", s["body"]), p("medication_evaluation/8 descarta en este orden: alergia directa, condición crónica, contraindicación con la enfermedad diagnosticada e incompatibilidad con un tratamiento actual. Si no queda un candidato, la respuesta conserva una advertencia y no inventa una opción.", s["body"]), PageBreak(), p("6. Actualización y rollback", s["h1"]), p("Una operación administrativa valida el modelo Pydantic y las referencias. Luego genera archivos temporales, compila el .pl con SWI-Prolog, reemplaza JSON y Prolog de forma atómica y ejecuta load_files/2 con recarga forzada bajo un RLock. Si la recarga falla, restaura los bytes anteriores y registra el error para evitar un estado parcial.", s["body"]), PipelineDiagram(["Validación", "Temporales", "Compilar .pl", "Reemplazo", "Recarga", "Bitácora"], "Si la compilación o la recarga fallan, se restaura el JSON y el .pl anteriores (rollback atómico)"), Spacer(1, 10), p("7. Autenticación", s["h1"]), p("El usuario y un hash PBKDF2 se leen desde variables de entorno. El login entrega un token temporal almacenado solo en memoria. Todas las rutas administrativas exigen Authorization: Bearer. CORS usa orígenes explícitos.", s["body"]), p("8. RPA", s["h1"]), p("El RPA acepta el formato oficial del docente: una lista JSON con nombre_enfermedad, descripcion, sintomas_asociados, tratamiento_recomendado, medicamentos_contraindicados y sistema_cuerpo. También mantiene retrocompatibilidad con el formato interno de desarrollo. El adaptador valida campos y referencias, registra automáticamente los síntomas y medicamentos nuevos, crea las contraindicaciones por enfermedad, clasifica por sistema/tipo, regenera el conocimiento, recarga el motor y escribe logs/rpa_*.txt con el detalle por enfermedad. PyAutoGUI y TagUI quedan pendientes de confirmación docente.", s["body"]), PipelineDiagram(["TXT oficial", "Validar", "Alta datos", "Regenerar .pl", "Recargar", "Bitácora TXT"], "Ejecutable por CLI (python -m rpa.cli) o por el endpoint autenticado /api/admin/rpa/import del backend"), Spacer(1, 10), p("9. Verificación", s["h1"]), rich('<b>Backend:</b> <font name="Courier">pytest</font><br/><b>Frontend:</b> <font name="Courier">cd frontend &amp;&amp; npm run build</font><br/><b>Prolog:</b> <font name="Courier">python -m scripts.generate_prolog</font>', s["body"]), p("10. Despliegue pendiente", s["h1"]), p("GitHub Pages no ejecuta FastAPI, SWI-Prolog ni pyswip. El repositorio mantiene la decisión local-first hasta confirmar con el docente si el frontend se publicará en Pages y el backend en otro entorno permitido.", s["callout"])]
     return story
 
 
@@ -123,7 +168,7 @@ def build_cases():
     story = cover("Casos clínicos sintéticos", "Tres pruebas de coherencia y reflexión crítica sobre IA simbólica", s)
     cases = [
         ("Caso 1 - Influenza con alergia", "Entrada: tos moderada, fiebre severa y alergia a ibuprofeno. Influenza obtiene 5/12 = 41.67%; tos aporta 2 y fiebre 3. La urgencia es inmediata. Ibuprofeno se descarta por alergia y paracetamol queda como candidato sintético seguro.", "La salida es coherente con la base controlada y muestra que la severidad cambia la afinidad. El porcentaje no es una probabilidad clínica."),
-        ("Caso 2 - Resfriado con antecedente", "Entrada: tos leve, antecedente de hipertensión y tratamiento actual warfarina. Resfriado común obtiene 1/12 = 8.33%. Ibuprofeno se descarta por hipertensión; el sistema conserva paracetamol y loratadina como candidatos sintéticos.", "El filtro evita el candidato conflictivo y documenta la causa. El prototipo no determina dosis ni indica iniciar un tratamiento."),
+        ("Caso 2 - Tos leve con antecedente de hipertensión", "Entrada: tos leve, antecedente de hipertensión y tratamiento actual warfarina. Rinitis alérgica encabeza con 1/9 = 11.11% (tos también pertenece a esa enfermedad y su denominador es menor); Influenza y Resfriado común aparecen con 1/12 = 8.33% y en ambos ibuprofeno se descarta por la contraindicación con la hipertensión. Loratadina permanece segura.", "El ordenamiento favorece a la enfermedad con menor denominador ante pesos iguales y el filtro por cronicidad excluye el candidato conflictivo donde aplica. El prototipo no determina dosis ni indica iniciar un tratamiento."),
         ("Caso 3 - Rinitis parcial", "Entrada: estornudos moderados, congestión nasal leve y alergia a paracetamol. Rinitis alérgica obtiene 3/9 = 33.33%; estornudos aporta 2 y congestión 1. La urgencia es observación; loratadina queda disponible.", "La enfermedad aparece por coincidencia parcial y el informe conserva el desglose de puntos."),
     ]
     for title, result, coherence in cases:

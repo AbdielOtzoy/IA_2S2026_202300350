@@ -18,9 +18,9 @@ def _split_origins(value: str | None) -> list[str]:
 @dataclass(frozen=True)
 class Settings:
     root_dir: Path = ROOT_DIR
-    data_file: Path = field(default_factory=lambda: ROOT_DIR / "data" / "knowledge_base.json")
-    prolog_file: Path = field(default_factory=lambda: ROOT_DIR / "prolog" / "medilogic.pl")
-    log_file: Path = field(default_factory=lambda: ROOT_DIR / "logs" / "changes.txt")
+    data_file: Path = field(default_factory=lambda: Path(os.getenv("MEDILOGIC_DATA_FILE") or ROOT_DIR / "data" / "knowledge_base.json"))
+    prolog_file: Path = field(default_factory=lambda: Path(os.getenv("MEDILOGIC_PROLOG_FILE") or ROOT_DIR / "prolog" / "medilogic.pl"))
+    log_file: Path = field(default_factory=lambda: Path(os.getenv("MEDILOGIC_LOG_FILE") or ROOT_DIR / "logs" / "changes.txt"))
     admin_username: str = field(default_factory=lambda: os.getenv("MEDILOGIC_ADMIN_USERNAME", "admin"))
     admin_password_hash: str = field(default_factory=lambda: os.getenv("MEDILOGIC_ADMIN_PASSWORD_HASH", ""))
     cors_origins: list[str] = field(default_factory=lambda: _split_origins(os.getenv("MEDILOGIC_CORS_ORIGINS")))
