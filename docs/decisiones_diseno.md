@@ -22,7 +22,7 @@ El historial se guarda solamente en `sessionStorage`, limitado a diez entradas y
 
 ## RPA y ambigüedad del formato
 
-La asignación menciona un TXT y también PyAutoGUI/TagUI, pero no fija un formato final en los archivos disponibles. Se implementó un adaptador Python que recibe JSON UTF-8 dentro de `.txt`, con ejemplo de tres enfermedades y bitácora. Cuando el docente confirme el formato o herramienta visual, solo debe sustituirse `rpa/importer.py`.
+La asignación menciona un TXT y también PyAutoGUI/TagUI, pero no fija un formato final en los archivos disponibles. El archivo entregado por el auxiliar (`ejemplos_aux/archivo_rpa.json`) confirma una lista JSON UTF-8 como entrada oficial. Se implementó un adaptador Python que acepta esa extensión `.json` y mantiene compatibilidad con `.txt`, con validación de campos, ejemplo de tres enfermedades y bitácora. La herramienta visual de automatización queda pendiente de confirmación docente.
 
 ## Despliegue
 

@@ -14,7 +14,7 @@ from .importer import import_file
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Carga RPA de enfermedades MediLogic")
-    parser.add_argument("archivo", help="Ruta al TXT con JSON")
+    parser.add_argument("archivo", help="Ruta al archivo RPA .json o .txt con JSON UTF-8")
     args = parser.parse_args()
     settings = Settings()
     settings.ensure_directories()

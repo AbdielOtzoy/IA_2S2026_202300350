@@ -62,3 +62,17 @@ def test_rpa_upload_updates_catalog_and_logs(test_settings):
     assert test_settings.prolog_file.read_text(encoding="utf-8").count("disease('") >= 7
     assert (test_settings.log_file.parent / result["log_file"].split("/")[-1]).exists() or __import__("pathlib").Path(result["log_file"]).exists()
 
+
+def test_rpa_upload_accepts_auxiliary_official_json(test_settings):
+    client = authenticated_client(test_settings)
+    content = open("ejemplos_aux/archivo_rpa.json", "rb").read()
+    response = client.post(
+        "/api/admin/rpa/import",
+        files={"file": ("archivo_rpa.json", content, "application/json")},
+    )
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result["source_format"] == "formato_oficial"
+    assert result["created_diseases"] == 3
+    assert result["updated_diseases"] == 1
+    assert result["created_contraindications"] == 6

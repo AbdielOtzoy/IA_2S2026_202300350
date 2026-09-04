@@ -25,7 +25,7 @@ Los resúmenes recientes quedan únicamente en el navegador durante la sesión a
 2. Cree síntomas, medicamentos o enfermedades con identificadores en minúsculas y guiones bajos.
 3. En una enfermedad, use ids existentes en los campos de síntomas y medicamentos.
 4. Revise los registros y descargue `medilogic.pl` si necesita inspeccionar la base generada.
-5. Seleccione un TXT RPA para cargar nuevos registros. El sistema valida, recarga y registra la bitácora.
+5. Seleccione un archivo RPA `.json` o `.txt` para cargar nuevos registros. El sistema valida, recarga y registra la bitácora.
 
 ## Errores comunes
 
@@ -33,4 +33,3 @@ Los resúmenes recientes quedan únicamente en el navegador durante la sesión a
 - **Referencia inexistente:** cree primero el síntoma o medicamento usado por la enfermedad.
 - **No se puede eliminar:** la entidad aún está relacionada; quite la relación desde la enfermedad o contraindicación.
 - **Credenciales inválidas:** regenere el hash con `python -m backend.auth --hash ...` y actualice el `.env`.
-

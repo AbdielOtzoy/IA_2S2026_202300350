@@ -14,18 +14,18 @@ uvicorn backend.main:app --reload --env-file .env
 cd frontend && npm run dev   # http://127.0.0.1:5173
 ```
 
-Verificar que `rpa/examples/formato_oficial_tutor.txt` contiene las 4 enfermedades del formato oficial del docente, incluido el campo `tratamiento_recomendado`.
+Verificar que `ejemplos_aux/archivo_rpa.json` contiene las 4 enfermedades del formato oficial del docente, incluido el campo `tratamiento_recomendado`.
 
 ## 2. Guion sugerido (3-5 minutos)
 
 1. **Intro (15 s):** nombre del proyecto, integrante y objetivo del RPA: cargar enfermedades desde el archivo oficial del docente sin editar el `.pl` a mano.
-2. **Archivo de entrada (30 s):** abrir `rpa/examples/formato_oficial_tutor.txt` y señalar los campos: `nombre_enfermedad`, `sintomas_asociados`, `tratamiento_recomendado`, `medicamentos_contraindicados`, `sistema_cuerpo`.
+2. **Archivo de entrada (30 s):** abrir `ejemplos_aux/archivo_rpa.json` y señalar los campos: `nombre_enfermedad`, `descripcion`, `sintomas_asociados`, `tratamiento_recomendado`, `medicamentos_contraindicados`, `sistema_cuerpo`.
 3. **Estado inicial (30 s):** módulo de paciente → el catálogo aún no incluye Asma bronquial, Diabetes tipo 2 ni Gastroenteritis aguda.
-4. **Ejecución visual del RPA (60 s):** Administración → iniciar sesión → sección "Automatización robótica" → seleccionar el TXT → "Ejecutar RPA". Mostrar el resultado JSON: 3 enfermedades creadas, 1 actualizada, síntomas/medicamentos/contraindicaciones creados.
+4. **Ejecución visual del RPA (60 s):** Administración → iniciar sesión → sección "Automatización robótica" → seleccionar el JSON → "Ejecutar RPA". Mostrar el resultado JSON: 3 enfermedades creadas, 1 actualizada, síntomas/medicamentos/contraindicaciones creados.
 5. **Bitácora (30 s):** abrir `logs/rpa_*.txt` y mostrar el detalle por enfermedad y la validación Prolog.
 6. **Verificación del `.pl` (30 s):** en el panel admin, visualizar/descargar `medilogic.pl` y buscar `asma_bronquial`; señalar la clasificación por sistema (`respiratorio`, `endocrino`, `digestivo`, `circulatorio`) y las contraindicaciones generadas.
 7. **Comprobación end-to-end (60 s):** módulo de paciente → recargar → Asma bronquial aparece → analizar con `dificultad_respiratoria` severa y `silbido_pecho` moderado, alergia a Salbutamol → el resultado muestra Salbutamol descartado por alergia y Fluticasona como candidato seguro (prueba de que `tratamiento_recomendado` alimenta el motor).
-8. **Alternativa CLI (20 s):** `python -m rpa.cli rpa/examples/formato_oficial_tutor.txt` (opcional, demuestra ejecución por terminal).
+8. **Alternativa CLI (20 s):** `python -m rpa.cli ejemplos_aux/archivo_rpa.json` (opcional, demuestra ejecución por terminal).
 9. **Cierre (15 s):** advertencia académica y mención de la bitácora como evidencia.
 
 ## 3. Grabación en macOS

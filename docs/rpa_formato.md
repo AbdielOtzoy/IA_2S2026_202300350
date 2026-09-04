@@ -2,7 +2,7 @@
 
 ## Formato oficial del docente
 
-El archivo `rpa/examples/formato_oficial_tutor.txt` (igual a `ejemplos_aux/archivo_rpa.json`) representa el formato oficial: un arreglo JSON UTF-8 donde cada elemento es una enfermedad con los campos:
+El archivo `ejemplos_aux/archivo_rpa.json` representa el formato oficial: un arreglo JSON UTF-8 donde cada elemento es una enfermedad con los campos:
 
 | Campo | Tipo | Uso en la base |
 |---|---|---|
@@ -14,7 +14,7 @@ El archivo `rpa/examples/formato_oficial_tutor.txt` (igual a `ejemplos_aux/archi
 | `sistema_cuerpo` | texto | `system` (clasificación por sistema corporal) |
 | `tipo_enfermedad` (opcional) | texto | `type`; si no viene se registra `no_especificado` |
 
-El archivo debe tener extensión `.txt` y contener JSON UTF-8. El flujo completo: lectura, validación de campos, alta automática de síntomas y medicamentos referenciados, creación de contraindicaciones, actualización y recarga de `prolog/medilogic.pl`, y bitácora `logs/rpa_*.txt` con el detalle por enfermedad. Si una enfermedad ya existía, se actualiza conservando su indicador de antecedente (`is_background`), que el formato oficial no incluye.
+El archivo oficial puede conservar su extensión `.json` o recibirse como `.txt`; en ambos casos contiene JSON UTF-8. El flujo completo: lectura, validación de campos obligatorios, alta automática de síntomas y medicamentos referenciados, creación de contraindicaciones, actualización y recarga de `prolog/medilogic.pl`, y bitácora `logs/rpa_*.txt` con el detalle por enfermedad. Si una enfermedad ya existía, se actualiza conservando su indicador de antecedente (`is_background`), que el formato oficial no incluye.
 
 ## Formato interno de desarrollo (retrocompatible)
 

@@ -11,7 +11,7 @@ MediLogic es un prototipo académico de sistema experto. La aplicación recibe u
 3. `KnowledgeRepository` conserva el JSON, genera el `.pl` y registra cambios.
 4. `PrologEngine` ejecuta consultas con `pyswip`, fuerza `load_files/2` al recargar y protege el estado compartido con un bloqueo.
 5. ReportLab genera el informe PDF.
-6. El módulo RPA procesa TXT JSON en el backend y escribe una bitácora.
+6. El módulo RPA procesa archivos JSON o TXT con JSON en el backend y escribe una bitácora.
 
 ## Contrato Prolog
 

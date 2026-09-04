@@ -1,4 +1,4 @@
-"""Adaptador RPA para archivos TXT cuyo contenido es JSON.
+"""Adaptador RPA para archivos JSON o TXT cuyo contenido es JSON.
 
 Acepta dos representaciones aisladas aquí, sin afectar el endpoint ni el CLI:
 
@@ -25,6 +25,17 @@ from typing import Any
 
 from backend.knowledge import KnowledgeRepository
 from backend.models import Contraindication, Disease, KnowledgeBase, Medication, Symptom
+
+
+RPA_INPUT_EXTENSIONS = {".json", ".txt"}
+OFFICIAL_REQUIRED_FIELDS = (
+    "nombre_enfermedad",
+    "descripcion",
+    "sintomas_asociados",
+    "tratamiento_recomendado",
+    "medicamentos_contraindicados",
+    "sistema_cuerpo",
+)
 
 
 class RpaImportError(ValueError):
@@ -86,15 +97,22 @@ def convert_official_payload(rows: list[Any]) -> tuple[dict[str, Any], str]:
     seen_medications: set[str] = set()
     seen_diseases: set[str] = set()
 
-    for row in rows:
+    for index, row in enumerate(rows, start=1):
+        context = f"El registro #{index}"
         nombre = row.get("nombre_enfermedad")
+        if isinstance(nombre, str) and nombre.strip():
+            context = f"La enfermedad {nombre.strip()}"
         if not isinstance(nombre, str) or len(nombre.strip()) < 2:
             raise RpaImportError("Cada enfermedad requiere 'nombre_enfermedad' (texto de al menos 2 caracteres)")
+        missing_fields = [field for field in OFFICIAL_REQUIRED_FIELDS if field not in row]
+        if missing_fields:
+            fields = ", ".join(f"'{field}'" for field in missing_fields)
+            raise RpaImportError(f"{context} requiere los campos oficiales: {fields}")
         disease_id = _slugify(nombre)
         if disease_id in seen_diseases:
             raise RpaImportError(f"La enfermedad '{nombre}' aparece más de una vez en el archivo")
-        descripcion = row.get("descripcion", "")
-        if not isinstance(descripcion, str):
+        descripcion = row["descripcion"]
+        if not isinstance(descripcion, str) or not descripcion.strip():
             raise RpaImportError(f"La descripción de {nombre} debe ser texto")
         sistema = row.get("sistema_cuerpo")
         if not isinstance(sistema, str) or len(sistema.strip()) < 2:
@@ -103,15 +121,11 @@ def convert_official_payload(rows: list[Any]) -> tuple[dict[str, Any], str]:
         if not isinstance(tipo, str) or len(tipo.strip()) < 2:
             raise RpaImportError(f"El tipo de enfermedad de {nombre} debe ser texto")
 
-        sintomas = _ensure_list(row.get("sintomas_asociados"), f"sintomas_asociados de {nombre}")
+        sintomas = _ensure_list(row["sintomas_asociados"], f"sintomas_asociados de {nombre}")
         if not sintomas:
             raise RpaImportError(f"La enfermedad {nombre} no define 'sintomas_asociados'")
-        tratamientos = _ensure_list(
-            row.get("tratamiento_recomendado", []), f"tratamiento_recomendado de {nombre}"
-        )
-        contraindicados = _ensure_list(
-            row.get("medicamentos_contraindicados", []), f"medicamentos_contraindicados de {nombre}"
-        )
+        tratamientos = _ensure_list(row["tratamiento_recomendado"], f"tratamiento_recomendado de {nombre}")
+        contraindicados = _ensure_list(row["medicamentos_contraindicados"], f"medicamentos_contraindicados de {nombre}")
 
         seen_diseases.add(disease_id)
         symptom_ids: list[str] = []
@@ -183,16 +197,17 @@ def convert_official_payload(rows: list[Any]) -> tuple[dict[str, Any], str]:
 
 
 def parse_txt(content: bytes, filename: str = "carga.txt") -> tuple[dict[str, Any], str]:
-    if not filename.lower().endswith(".txt"):
-        raise RpaImportError("El RPA solo acepta archivos con extensión .txt")
+    extension = Path(filename).suffix.lower()
+    if extension not in RPA_INPUT_EXTENSIONS:
+        raise RpaImportError("El RPA solo acepta archivos con extensión .json o .txt")
     if not content:
-        raise RpaImportError("El archivo TXT está vacío")
+        raise RpaImportError("El archivo RPA está vacío")
     if len(content) > 1_000_000:
-        raise RpaImportError("El archivo TXT supera el límite de 1 MB")
+        raise RpaImportError("El archivo RPA supera el límite de 1 MB")
     try:
-        payload = json.loads(content.decode("utf-8"))
+        payload = json.loads(content.decode("utf-8-sig"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise RpaImportError("El TXT debe contener JSON UTF-8 válido") from exc
+        raise RpaImportError("El archivo RPA debe contener JSON UTF-8 válido") from exc
     if isinstance(payload, list):
         return convert_official_payload(payload)
     if isinstance(payload, dict):

@@ -16,7 +16,7 @@ frontend React/Vite  ->  API FastAPI  ->  PrologEngine (pyswip)  ->  prolog/medi
 - `backend/`: API, modelos, autenticación, persistencia, generación PDF e integración con Prolog.
 - `data/`: fuente estructurada para el CRUD administrativo.
 - `prolog/`: archivo generado con hechos y reglas; no se edita manualmente.
-- `rpa/`: lector/validador de TXT JSON, importador, CLI y ejemplo con tres enfermedades.
+- `rpa/`: lector/validador de archivos JSON o TXT con JSON, importador, CLI y ejemplo con tres enfermedades.
 - `frontend/`: aplicación React independiente.
 - `tests/`: pruebas de inferencia, API, rollback, RPA y PDF.
 - `docs/`: manuales, decisiones, diagramas y casos clínicos.
@@ -84,10 +84,10 @@ Administración autenticada: `POST /api/auth/login`, CRUD en `/api/admin/sintoma
 
 ## RPA
 
-El RPA recibe un archivo `.txt` cuyo contenido es JSON UTF-8 y soporta dos formatos: el **formato oficial del docente** (lista de enfermedades con `nombre_enfermedad`, `sintomas_asociados`, `tratamiento_recomendado`, `medicamentos_contraindicados` y `sistema_cuerpo`; ver `rpa/examples/formato_oficial_tutor.txt`) y el formato interno de desarrollo (`rpa/examples/carga_tres_enfermedades.txt`). Ejemplo de ejecución:
+El RPA recibe un archivo `.json` o `.txt` cuyo contenido es JSON UTF-8 y soporta dos formatos: el **formato oficial del docente** (lista de enfermedades con `nombre_enfermedad`, `descripcion`, `sintomas_asociados`, `tratamiento_recomendado`, `medicamentos_contraindicados` y `sistema_cuerpo`; ver `ejemplos_aux/archivo_rpa.json`) y el formato interno de desarrollo (`rpa/examples/carga_tres_enfermedades.txt`). Ejemplo de ejecución:
 
 ```bash
-python -m rpa.cli rpa/examples/formato_oficial_tutor.txt
+python -m rpa.cli ejemplos_aux/archivo_rpa.json
 ```
 
 El proceso detecta el formato, valida campos, registra automáticamente síntomas y medicamentos referenciados, crea las contraindicaciones de cada enfermedad, clasifica por sistema y tipo, actualiza JSON y `.pl`, recarga Prolog y genera la bitácora `logs/rpa_*.txt` con el detalle por enfermedad. La elección entre PyAutoGUI y TagUI queda pendiente de confirmación docente; el flujo requerido sí está implementado del lado del backend en Python.

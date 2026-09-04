@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -5,7 +6,8 @@ import pytest
 from backend.models import AnalysisRequest, PatientSymptom
 from rpa.importer import RpaImportError, import_file, parse_txt
 
-OFFICIAL_FILE = Path("rpa/examples/formato_oficial_tutor.txt")
+OFFICIAL_FILE = Path("ejemplos_aux/archivo_rpa.json")
+OFFICIAL_TXT_FILE = Path("rpa/examples/formato_oficial_tutor.txt")
 
 
 def test_official_format_import_updates_knowledge(repository):
@@ -37,6 +39,12 @@ def test_official_format_import_updates_knowledge(repository):
     assert "formato_oficial" in log
     assert "Contraindicaciones creadas: 6" in log
     assert "Validación Prolog: exitosa" in log
+
+
+def test_official_txt_copy_remains_supported():
+    payload, source_format = parse_txt(OFFICIAL_TXT_FILE.read_bytes(), OFFICIAL_TXT_FILE.name)
+    assert source_format == "formato_oficial"
+    assert len(payload["enfermedades"]) == 4
 
 
 def test_official_import_enables_analysis_with_treatments(repository):
@@ -75,10 +83,24 @@ def test_official_format_validation_errors():
     with pytest.raises(RpaImportError):
         parse_txt(b'[{"nombre_enfermedad": "Gripe"}]', "carga.txt")
     with pytest.raises(RpaImportError):
-        parse_txt(b'[{"nombre_enfermedad": "Gripe", "sistema_cuerpo": "respiratorio", "sintomas_asociados": ["tos"], "tratamiento_recomendado": [], "medicamentos_contraindicados": []}]', "informe.json")
+        parse_txt(b'[{"nombre_enfermedad": "Gripe", "sistema_cuerpo": "respiratorio", "sintomas_asociados": ["tos"], "tratamiento_recomendado": [], "medicamentos_contraindicados": []}]', "informe.csv")
+
+    official_row = {
+        "nombre_enfermedad": "Gripe",
+        "descripcion": "Infección respiratoria sintética.",
+        "sintomas_asociados": ["tos"],
+        "tratamiento_recomendado": [],
+        "medicamentos_contraindicados": [],
+        "sistema_cuerpo": "respiratorio",
+    }
+    for field in ("descripcion", "tratamiento_recomendado", "medicamentos_contraindicados"):
+        incomplete_row = official_row.copy()
+        del incomplete_row[field]
+        with pytest.raises(RpaImportError, match=field):
+            parse_txt(json.dumps([incomplete_row]).encode("utf-8"), "archivo_rpa.json")
     duplicated = b"""[
-      {"nombre_enfermedad": "Gripe", "sistema_cuerpo": "respiratorio", "sintomas_asociados": ["tos"]},
-      {"nombre_enfermedad": "Gripe", "sistema_cuerpo": "respiratorio", "sintomas_asociados": ["fiebre"]}
+      {"nombre_enfermedad": "Gripe", "descripcion": "Enfermedad sintetica.", "sistema_cuerpo": "respiratorio", "sintomas_asociados": ["tos"], "tratamiento_recomendado": [], "medicamentos_contraindicados": []},
+      {"nombre_enfermedad": "Gripe", "descripcion": "Enfermedad sintetica.", "sistema_cuerpo": "respiratorio", "sintomas_asociados": ["fiebre"], "tratamiento_recomendado": [], "medicamentos_contraindicados": []}
     ]"""
     with pytest.raises(RpaImportError, match="más de una vez"):
         parse_txt(duplicated, "carga.txt")
