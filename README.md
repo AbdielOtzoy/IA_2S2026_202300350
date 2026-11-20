@@ -1,4 +1,16 @@
-# MediLogic - IA 1
+# MediLogic — sistema experto con Prolog, FastAPI y React
+
+> **English summary:** an expert system that ranks possible conditions from a patient's symptoms with SWI-Prolog rules, filters out treatments that clash with allergies, chronic conditions or current medication, and exports the result as a PDF. A FastAPI backend bridges Python and Prolog (`pyswip`); an admin panel edits the knowledge base and regenerates the Prolog file; an RPA importer loads diseases in bulk from JSON. Academic project — not a clinical tool.
+
+Proyecto del laboratorio de *Inteligencia Artificial 1* (Universidad de San Carlos de Guatemala, 2.º semestre 2026). Trabajo individual.
+
+**Lo más interesante del proyecto:**
+
+- La lógica de inferencia vive en Prolog y se genera desde un JSON editable: el CRUD administrativo actualiza el JSON, regenera `medilogic.pl` y recarga el motor con un bloqueo, sin reiniciar el servidor.
+- Prolog descarta tratamientos por alergias, condiciones crónicas, contraindicaciones y medicamentos actuales, y la respuesta conserva las opciones descartadas con su motivo.
+- Importador RPA que detecta el formato, valida los campos y deja una bitácora por enfermedad.
+- Pruebas con `pytest` para la inferencia, la API, el rollback, el RPA y el PDF.
+
 
 Sistema experto académico de orientación preliminar desarrollado con Python, FastAPI, React/Vite, SWI-Prolog y `pyswip`.
 
@@ -109,7 +121,7 @@ La bitácora de cambios administrativos está en `logs/changes.txt` durante la e
 
 ## Decisiones pendientes de despliegue
 
-El PDF de la asignación solicita GitHub Pages, pero GitHub Pages no ejecuta FastAPI, SWI-Prolog ni `pyswip`. Por eso este repositorio mantiene una arquitectura local-first y deja pendiente confirmar con el docente si el frontend debe publicarse en Pages y el backend en otro servicio permitido. El repositorio debe permanecer privado durante el desarrollo y hacerse público después de la calificación.
+El PDF de la asignación solicita GitHub Pages, pero GitHub Pages no ejecuta FastAPI, SWI-Prolog ni `pyswip`. Por eso este repositorio mantiene una arquitectura local-first y deja pendiente confirmar con el docente si el frontend debe publicarse en Pages y el backend en otro servicio permitido. El repositorio se mantuvo privado durante el desarrollo y se publicó después de la entrega.
 
 ## Entrega académica
 
